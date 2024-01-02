@@ -9,6 +9,7 @@ import {
   serverTimestamp,
   Timestamp,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db, storage } from "../firebase";
 import { v4 as uuid } from "uuid";
@@ -19,60 +20,86 @@ const Input = () => {
   const [img, setImg] = useState(null);
 
   const { currentUser } = useContext(AuthContext);
-  const { data } = useContext(ChatContext);
+  const { data, dispatch } = useContext(ChatContext);
 
   const handleSend = async () => {
-    if (img) {
-      const storageRef = ref(storage, uuid());
-
-      const uploadTask = uploadBytesResumable(storageRef, img);
-
-      uploadTask.on(
-        (error) => {
-          //TODO:Handle Error
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            await updateDoc(doc(db, "chats", data.chatId), {
-              messages: arrayUnion({
-                id: uuid(),
-                text,
-                senderId: currentUser.uid,
-                date: Timestamp.now(),
-                img: downloadURL,
-              }),
-            });
-          });
-        }
-      );
-    } else {
-      await updateDoc(doc(db, "chats", data.chatId), {
-        messages: arrayUnion({
-          id: uuid(),
-          text,
-          senderId: currentUser.uid,
-          date: Timestamp.now(),
-        }),
-      });
+    if (!data || !data.chatId) {
+      console.error("data.chatId is null or undefined");
+      return;
     }
 
-    await updateDoc(doc(db, "userChats", currentUser.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
+    try {
+      if (img) {
+        const storageRef = ref(storage, uuid());
+        const uploadTask = uploadBytesResumable(storageRef, img);
 
-    await updateDoc(doc(db, "userChats", data.user.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
+        uploadTask.on(
+          "state_changed",
+          null,
+          (error) => {
+            console.error("Error during image upload:", error);
+          },
+          async () => {
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-    setText("");
-    setImg(null);
+              // Null check added for img before using it
+              const imgData = downloadURL ? { img: downloadURL } : {};
+
+              await updateDoc(doc(db, "chats", data.chatId), {
+                messages: arrayUnion({
+                  id: uuid(),
+                  text,
+                  senderId: currentUser.uid,
+                  date: Timestamp.now(),
+                  ...imgData,
+                }),
+              });
+            } catch (error) {
+              console.error("Error updating document with image URL:", error);
+            }
+          }
+        );
+      } else {
+        await updateDoc(doc(db, "chats", data.chatId), {
+          messages: arrayUnion({
+            id: uuid(),
+            text,
+            senderId: currentUser.uid,
+            date: Timestamp.now(),
+          }),
+        });
+      }
+
+      const userChatDocRef = doc(db, "userChats", currentUser.uid);
+      const userChatDocSnapshot = await getDoc(userChatDocRef);
+      const userChatData = userChatDocSnapshot.data();
+
+      if (userChatData && userChatData[data.chatId]) {
+        await updateDoc(userChatDocRef, {
+          [data.chatId + ".lastMessage.text"]: text,
+          [data.chatId + ".date"]: serverTimestamp(),
+        });
+      }
+
+      const recipientChatDocRef = doc(db, "userChats", data.user.uid);
+      const recipientChatDocSnapshot = await getDoc(recipientChatDocRef);
+      const recipientChatData = recipientChatDocSnapshot.data();
+
+      if (recipientChatData && recipientChatData[data.chatId]) {
+        await updateDoc(recipientChatDocRef, {
+          [data.chatId + ".lastMessage.text"]: text,
+          [data.chatId + ".date"]: serverTimestamp(),
+        });
+      }
+
+      setText("");
+      setImg(null);
+    } catch (error) {
+      console.error("Error during handleSend:", error);
+    }
   };
+
   return (
     <div className="input">
       <input

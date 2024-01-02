@@ -1,7 +1,8 @@
 import React from "react";
 import Navbar from "./Navbar"
 import Search from "./Search"
-import Chats from "./Chats"
+import { Link } from "react-router-dom";
+import Chats from "./Chats";
 
 const Sidebar = () => {
   return (
@@ -9,8 +10,15 @@ const Sidebar = () => {
       <Navbar />
       <Search/>
       <Chats/>
+      <Link to="/create-group">Grup Oluştur</Link>
     </div>
   );
 };
+
+
+
+
+
+
 
 export default Sidebar;
