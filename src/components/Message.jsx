@@ -12,6 +12,17 @@ const Message = ({ message }) => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
   }, [message]);
 
+  const formatTime = (timestamp) => {
+    if (!timestamp || isNaN(timestamp)) {
+      return "Invalid Timestamp";
+    }
+
+    const date = new Date(timestamp * 1000);
+    return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+  };
+
+  console.log("message:", message); // Kontrol için konsola yazdır
+
   return (
     <div
       ref={ref}
@@ -26,7 +37,9 @@ const Message = ({ message }) => {
           }
           alt=""
         />
-        <span>just now</span>
+        {/* Önemli kısım burası, eğer message içindeki zaman damgası farklı bir özellikse, onu kullanmalısınız */}
+        <span>{formatTime(message.date.seconds)}</span>
+        {/* Eğer date nesnesinin seconds özelliği varsa bu şekilde kullanabilirsiniz, eğer başka bir şekilde saklanıyorsa buna göre ayarlayın */}
       </div>
       <div className="messageContent">
         <p>{message.text}</p>
