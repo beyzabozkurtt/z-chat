@@ -27,21 +27,11 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
    npm install
 2. **Firebase yapılandırmasını yapın:**
 - Firebase projesi oluşturun ve yapılandırma bilgilerini alın.
-- src/firebaseConfig.js dosyasını oluşturun ve yapılandırma bilgilerinizi ekleyin.  
-```javascript
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+- src/firebaseConfig.js dosyasını oluşturun ve yapılandırma bilgilerinizi ekleyin.
+3. **Uygulamayı başlatın:**  
+   ```sh
+   npm start
 
-export default firebaseConfig;
-3. **Uygulamayı başlatın:**
-```sh
-npm start
 
 
 
