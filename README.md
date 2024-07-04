@@ -28,8 +28,7 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
 2. **Firebase yapılandırmasını yapın:**
 - Firebase projesi oluşturun ve yapılandırma bilgilerini alın.
 - src/firebaseConfig.js dosyasını oluşturun ve yapılandırma bilgilerinizi ekleyin.
-  ```sh
-  const firebaseConfig = {
+ const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
   projectId: "YOUR_PROJECT_ID",
@@ -39,6 +38,7 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
 };
 
 export default firebaseConfig;
+
 
 3.**Uygulamayı başlatın:**
 ```sh
