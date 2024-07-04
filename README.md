@@ -37,7 +37,4 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
 
 - Bu proje açık kaynaklıdır. Katkılarınızı bekliyoruz. GitHub üzerinden öneri göndererek veya pull request açarak projeye katkı sağlayabilirsiniz.
 
-## Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylı bilgi için [LICENSE](./LICENSE) dosyasına göz atabilirsiniz.
 
